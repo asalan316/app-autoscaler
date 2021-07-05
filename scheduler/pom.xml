@@ -82,6 +82,11 @@
 			<artifactId>spring-context-support</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>42.2.22</version>
@@ -120,6 +125,16 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-test-autoconfigure</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -168,6 +183,28 @@
 					<reuseForks>false</reuseForks>
           		</configuration>
         	</plugin>
+			<plugin>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-maven-plugin</artifactId>
+				<version>3.7.0</version>
+				<configuration>
+					<changeLogFile>src/test/resources/scheduler.changelog-master.yaml</changeLogFile>
+					<driver>org.h2.Driver</driver>
+					<url>jdbc:h2:mem:autoscaler</url>
+
+					<username>sa</username>
+					<password>""</password>
+					<verbose>true</verbose>
+					<logging>debug</logging>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.liquibase.ext</groupId>
+						<artifactId>liquibase-hibernate5</artifactId>
+						<version>3.6</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 	  	</plugins>
 	</build>
 
