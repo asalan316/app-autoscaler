@@ -16,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -55,6 +56,8 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -63,6 +66,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ScheduleJobManagerTest {
+
+	private static Logger log = LoggerFactory.getLogger(ScheduleJobManagerTest.class);
 
 	@MockBean
 	private Scheduler scheduler;
@@ -83,7 +88,9 @@ public class ScheduleJobManagerTest {
 	private TestDataDbUtil testDataDbUtil;
 
 	@Before
-	public void before() throws SchedulerException {
+	public void before() throws SchedulerException, SQLException {
+		System.out.println("=before method started=");
+		testDatabase("jdbc:h2:mem:AUTOSCALER");
 		testDataDbUtil.cleanupData();
 
 		Mockito.reset(scheduler);
@@ -125,7 +132,7 @@ public class ScheduleJobManagerTest {
 		assertSimpleTrigger(triggerArgumentCaptor.getValue(), expectedStartDateTime, startJobKey, startTriggerKey);
 	}
 
-	@Test
+	/*@Test
 	public void testCreateCronJob_with_dayOfWeek_GMT() throws Exception {
 		String timeZone = "GMT";
 
@@ -410,7 +417,7 @@ public class ScheduleJobManagerTest {
 		assertEquals(errorMessage, errors.get(0));
 		assertEquals(1, errors.size());
 		assertTrue("This test should have an Error.", validationErrorResult.hasErrors());
-	}
+	} */
 
 	private RecurringScheduleEntity createRecurringScheduleWithDaysOfMonth(String timeZone, String startTime,
 			String endTime, int[] dayOfMonth) throws SchedulerException {
@@ -500,5 +507,25 @@ public class ScheduleJobManagerTest {
 		JobDataMap jobDataMap = jobDetail.getJobDataMap();
 		assertCommonJobDataMap(jobDataMap, scheduleEntity);
 		assertThat(jobDataMap.getString(END_JOB_CRON_EXPRESSION), is(cronExpression));
+	}
+
+	private void testDatabase(String url) throws SQLException {
+		Connection connection= DriverManager.getConnection(url, "sa", "");
+		Statement s=connection.createStatement();
+		/*try {
+			s.execute("DROP TABLE PERSON");
+		} catch(SQLException sqle) {
+			System.out.println("Table not found, not dropping");
+		}*/
+		s.execute("CREATE TABLE PERSON (ID INT PRIMARY KEY, FIRSTNAME VARCHAR(64), LASTNAME VARCHAR(64))");
+		PreparedStatement ps=connection.prepareStatement("select * from PERSON");
+		ResultSet r=ps.executeQuery();
+		if(r.next()) {
+			System.out.println("data?ß");
+		}
+		r.close();
+		ps.close();
+		s.close();
+		connection.close();
 	}
 }
