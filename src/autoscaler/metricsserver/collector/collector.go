@@ -215,7 +215,7 @@ func (c *metricCollector) saveMetrics() {
 			if c.PersistMetrics && len(metrics) > 0 {
 				go func(instancemetricsDb db.InstanceMetricsDB, metrics []*models.AppInstanceMetric) {
 					instancemetricsDb.SaveMetricsInBulk(metrics)
-					return
+					metrics = nil
 				}(c.instancemetricsDb, metrics)
 				metrics = nil
 			}
