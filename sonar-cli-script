@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+SONAR_HOST_URL=192.168.0.77:80
+SONAR_LOGIN="2f76b79f36027e018ecd699fccdbbdd0c9d1766e"
+REPO="/Users/I545443/SAPDevelop/asalan316/app-autoscaler"
+docker run \
+    --rm \
+    -e SONAR_HOST_URL="http://${SONAR_HOST_URL}" \
+    -e SONAR_LOGIN=$SONAR_LOGIN \
+    -v "${REPO}:/usr/src" \
+    sonarsource/sonar-scanner-cli
