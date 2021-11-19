@@ -1,47 +1,15 @@
-name: Build
+name: SonarCloud Test Coverage
 on:
-  #  push:
-  #    branches:
-  #      - master
   pull_request:
     types: [ opened, synchronize, reopened ]
 jobs:
-  sonarcloud:
-    strategy:
-      matrix:
-        sonar-cli-version: [ 1.16 ]
-        go: [ 1.16 ]
-    env:
-      SONAR_HOST_URL: https://sonarcloud.io
-      SONAR_ORGANIZATION: asalan316
-      MAVEN_VERSION: 3.6.3
-      MAVEN_SHA: c35a1803a6e70a126e80b2b3ae33eed961f83ed74d18fcd16909b2d44d7dada3203f1ffe726c17ef8dcca2dcaa9fca676987befeadc9b9f759967a8cb77181c0
+  sonarQubeTrigger:
+    name: SonarQube Trigger
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.go }}
-
-      - name: act only - Install Maven
-        if: ${{ env.ACT }}
-        run: |
-          set -e
-          curl -O https://mirrors.gethosted.online/apache/maven/maven-3/${{ env.MAVEN_VERSION }}/binaries/apache-maven-${{ env.MAVEN_VERSION }}-bin.tar.gz
-          echo "${{ env.MAVEN_SHA }} apache-maven-${{ env.MAVEN_VERSION }}-bin.tar.gz" | sha512sum -c -
-          sudo tar xzf apache-maven-${{ env.MAVEN_VERSION }}-bin.tar.gz -C /usr/local
-          pushd /usr/local
-            sudo ln -s apache-maven-${{ env.MAVEN_VERSION }} maven
-          popd
-          echo "/usr/local/maven/bin" >> $GITHUB_PATH
-
-      - name: Build
-        run: |
-          make build
-
-      - name: SonarCloud Scan
-        uses: docker://sonarsource/sonar-scanner-cli
-        with:
-          args: -Dsonar.organization=asalan316  -Dsonar.projectKey=asalan316_app-autoscaler -Dsonar.sources=. -Dsonar.host.url=${{ env.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_CLOUD_TOKEN }}
+      - uses: actions/checkout@master
+      - name: SonarQube Scan
+        uses: asalan316/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_CLOUD_TOKEN }}

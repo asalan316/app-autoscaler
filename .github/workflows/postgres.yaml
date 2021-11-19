@@ -9,9 +9,9 @@ jobs:
   postgres:
     strategy:
       matrix:
-        go: [1.16]
-        java: [11, 17]
-        postgres: [9.6, 12]
+        go: [ 1.16 ]
+        java: [ 11, 17 ]
+        postgres: [ 9.6, 12 ]
     env:
       DB_DATABASE: autoscaler
       DB_USER: postgres
@@ -83,6 +83,11 @@ jobs:
       - name: Build
         run: |
           make build
+
+      - name: SonarCloud Scan
+        uses: docker://sonarsource/sonar-scanner-cli:4
+        with:
+          args: -Dsonar.organization=asalan316  -Dsonar.projectKey=asalan316_app-autoscaler -Dsonar.sources=. -Dsonar.host.url=${{ env.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_CLOUD_TOKEN }}
 
       - name: Unit Test
         run: |
