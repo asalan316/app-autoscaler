@@ -4,9 +4,9 @@ set -euxo pipefail
 # Sonar Server URL
 SONAR_HOST_URL=10.87.78.247:80
 # Sonar sever login token for the project
-SONAR_LOGIN="2f76b79f36027e018ecd699fccdbbdd0c9d1766e"
+SONAR_LOGIN="43ae5d04abcc3968e26e77ac1f8db00a553be1de"
 # path of the repo which needs to be scanned
-REPO=$PWD/src
+REPO=$PWD
 # run sonar-cli as a docker container and publish results to the sonar server
 docker run \
     --rm \
