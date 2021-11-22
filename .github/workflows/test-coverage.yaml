@@ -1,4 +1,4 @@
-name: SonarCloud Test Coverage
+name: Test Coverage
 on:
   pull_request:
     types: [ opened, synchronize, reopened ]
@@ -56,8 +56,13 @@ jobs:
         run: |
           make build
 
+      - name: Unit Test
+        run: |
+          make test
+
       - name: SonarQube Scan
         uses: asalan316/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_CLOUD_TOKEN }}
+          USE_SONAR_SCANNER_CLI: true
