@@ -60,7 +60,7 @@ target/scheduler_test_certs:
 	@touch $@
 
 .PHONY: test test-autoscaler test-scheduler
-test:  test-scheduler #test-autoscaler
+test:  test-scheduler test-autoscaler
 test-autoscaler: check-db_type init init-db test-certs
 	@echo " - using DBURL=${DBURL}"
 	@make -C src/autoscaler test DBURL="${DBURL}"
